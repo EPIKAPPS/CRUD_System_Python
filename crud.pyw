@@ -10,15 +10,19 @@ conexion = pymysql.connect(
     database="test"
 )
 
+# Crear cursor
 cursor = conexion.cursor()
 
 # Función para crear un nuevo registro
 def crear_registro(event=None):
+    # Obtener los valores de los campos de entrada
     nombre = nombre_entry.get()
     edad = edad_entry.get()
 
+    # Validar que se hayan ingresado ambos campos
     if nombre and edad:
         try:
+            # Crear el nuevo registro
             cursor.execute("INSERT INTO personas (nombre, edad) VALUES (%s, %s)", (nombre, edad))
             conexion.commit()
             nombre_entry.delete(0, "end")  # Borra el texto ingresado en el campo de nombre
@@ -26,13 +30,16 @@ def crear_registro(event=None):
             messagebox.showinfo("Éxito", "Registro creado con éxito.")
             leer_registros()
         except Exception as e:
+            # Mostrar un mensaje de error si no se pudo crear el registro
             messagebox.showerror("Error", f"No se pudo crear el registro. Error: {str(e)}")
     else:
+        # Mostrar un mensaje si no se ingresó nombre o edad
         messagebox.showwarning("Advertencia", "Por favor, ingrese nombre y edad.")
 
 # Función para leer registros y actualizar la tabla
 def leer_registros():
     try:
+        # Leer los registros
         cursor.execute("SELECT * FROM personas")
         registros = cursor.fetchall()
 
@@ -48,8 +55,10 @@ def leer_registros():
 
 # Función para editar un registro
 def editar_registro(event=None):
+    # Obtener el ID del registro seleccionado
     seleccion = tabla.selection()
     if seleccion:
+        # Obtener los valores de los campos de entrada
         id_seleccionado = seleccion[0]
         nombre_actual = tabla.item(id_seleccionado, "values")[1]
         edad_actual = tabla.item(id_seleccionado, "values")[2]
@@ -58,9 +67,9 @@ def editar_registro(event=None):
         mostrar_datos(id_seleccionado, nombre_actual, edad_actual)
 
     else:
+        # Mostrar un mensaje si no se seleccionó un registro
         messagebox.showwarning("Advertencia", "Por favor, selecciona un registro para editar.")
 
-from tkinter import messagebox
 
 # Función para eliminar un registro
 def eliminar_registro(event=None):
@@ -90,6 +99,7 @@ def eliminar_registro(event=None):
         messagebox.showwarning("Advertencia", "Por favor, selecciona un registro para eliminar.")
 
 
+# Función para mostrar la ventana de datos
 def mostrar_datos(id, nombre, edad):
     # Crear la ventana de datos
     ventana_datos = tk.Toplevel()
